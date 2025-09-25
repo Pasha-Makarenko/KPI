@@ -1,0 +1,90 @@
+Table users {
+  id int [pk, increment]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  email varchar [unique, not null]
+  phone varchar [not null]
+  address varchar [not null]
+  postal_code varchar [not null]
+  registered_at timestamp [default: `now()`, not null]
+}
+
+Table categories {
+  id int [pk, increment]
+  name varchar [not null]
+  parent_category_id int [ref: > categories.id]
+}
+
+Table products {
+  id int [pk, increment]
+  name varchar [not null]
+  description text
+  price decimal(10,2) [not null]
+  stock_quantity int [not null]
+  category_id int [ref: > categories.id, not null]
+}
+
+Table orders {
+  id int [pk, increment]
+  user_id int [ref: > users.id, not null]
+  total_amount decimal(10,2) [not null]
+  status order_status [default: `NEW`, not null]
+  created_at timestamp [default: `now()`, not null]
+}
+
+Table order_products {
+  id int [pk, increment]
+  order_id int [ref: > orders.id, not null]
+  product_id int [ref: > products.id, not null]
+  quantity int [not null]
+  price_at_purchase decimal(10,2) [not null]
+}
+
+Table payments {
+  id int [pk, increment]
+  order_id int [ref: - orders.id, not null]
+  amount decimal(10,2) [not null]
+  method payment_method [not null]
+  status payment_status [default: `PENDING`, not null]
+}
+
+Table shipments {
+  id int [pk, increment]
+  order_id int [ref: - orders.id, not null]
+  method shipment_method [not null]
+  status shipment_status [default: `PENDING`, not null]
+  tracking_number int [not null]
+}
+
+Enum order_status {
+  NEW
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELED
+}
+
+Enum payment_method {
+  CARD
+  PAYPAL
+  CASH_ON_DELIVERY
+}
+
+Enum payment_status {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+Enum shipment_method {
+  COURIER
+  POST
+  PICKUP
+}
+
+Enum shipment_status {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+}
