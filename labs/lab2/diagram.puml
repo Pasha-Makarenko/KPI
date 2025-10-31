@@ -50,6 +50,8 @@ rectangle "Bug Tracker" {
   UC_ViewList <.. UC_FilterList : <<extends>>
   UC_ViewList <.. UC_BatchEdit : <<extends>>
   UC_ViewDetails <.. UC_LinkBugs : <<extends>>
+  UC_ChangeStatus <.. UC_BatchEdit : <<extends>>
+  UC_AssignBug <.. UC_BatchEdit : <<extends>>
 
   UC_CreateBug ..> UC_AttachFile : <<include>>
   UC_AddComment ..> UC_AttachFile : <<include>>
