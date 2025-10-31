@@ -5,12 +5,10 @@ actor "Team Member" as TeamMember
 actor "QA" as QA
 actor "Developer" as Dev
 actor "Project Manager" as PM
-actor "Notification Service" as NotifService <<system>>
-actor "Git Repository" as GitRepo <<system>>
 
-TeamMember <|-- QA : extends
-TeamMember <|-- Dev : extends
-TeamMember <|-- PM : extends
+TeamMember <|-- QA
+TeamMember <|-- Dev
+TeamMember <|-- PM
 
 rectangle "Bug Tracker" {
   usecase UC_ViewList as "View bug list"
@@ -21,21 +19,22 @@ rectangle "Bug Tracker" {
   usecase UC_AssignBug as "Assign performer"
   usecase UC_LinkCommit as "Link commit"
   usecase UC_GenReport as "Generate report"
-  usecase UC_Notify as "Send notification"
   usecase UC_AttachFile as "Attach file"
   usecase UC_FilterList as "Filter list"
   usecase UC_BatchEdit as "Batch edit bugs"
   usecase UC_LinkBugs as "Link bugs"
-  usecase UC_VerifyFix as "Verify fix"
-  usecase UC_CloseBug as "Close bug"
-  usecase UC_ReopenBug as "Reopen bug"
+  usecase UC_GenPDF as "Generate PDF report"
+  usecase UC_GenCSV as "Generate CSV report"
 
   TeamMember --> UC_ViewList
   TeamMember --> UC_ViewDetails
   TeamMember --> UC_AddComment
+  TeamMember --> UC_AttachFile
+  TeamMember --> UC_LinkBugs
+  TeamMember --> UC_FilterList
 
   QA --> UC_CreateBug
-  QA --> UC_VerifyFix
+  QA --> UC_ChangeStatus
 
   Dev --> UC_ChangeStatus
   Dev --> UC_AssignBug
@@ -43,22 +42,16 @@ rectangle "Bug Tracker" {
 
   PM --> UC_GenReport
   PM --> UC_BatchEdit
+  PM --> UC_AssignBug
 
-  UC_LinkCommit --> GitRepo
-  UC_Notify --> NotifService
+  UC_GenReport <|-- UC_GenPDF
+  UC_GenReport <|-- UC_GenCSV
 
-  UC_VerifyFix <|-- UC_CloseBug : extends
-  UC_VerifyFix <|-- UC_ReopenBug : extends
-  UC_CreateBug ..> UC_Notify : use
-  UC_ChangeStatus ..> UC_Notify : use
-  UC_AddComment ..> UC_Notify : use
-  UC_AssignBug ..> UC_Notify : use
-  UC_VerifyFix ..> UC_Notify : use
-  UC_BatchEdit ..> UC_Notify : use
-  UC_CreateBug ..> UC_AttachFile : use
-  UC_AddComment ..> UC_AttachFile : use
-  UC_ViewDetails <.. UC_LinkBugs : use
-  UC_ViewList <.. UC_FilterList : use
-  UC_ViewList <.. UC_BatchEdit : use
+  UC_ViewList <.. UC_FilterList : <<extends>>
+  UC_ViewList <.. UC_BatchEdit : <<extends>>
+  UC_ViewDetails <.. UC_LinkBugs : <<extends>>
+
+  UC_CreateBug ..> UC_AttachFile : <<include>>
+  UC_AddComment ..> UC_AttachFile : <<include>>
 }
 @enduml
