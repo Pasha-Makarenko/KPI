@@ -1,0 +1,93 @@
+@startuml
+title Bug Lifecycle Management Process
+
+|QA Engineer|
+|System|
+|Project Manager|
+|Developer|
+
+|QA Engineer|
+start
+:Detect Issue;
+:Fill Bug Report Form;
+:Submit Form;
+
+|System|
+:Validate Data;
+if (Validation Success?) then (no)
+  |QA Engineer|
+  :Failed;
+  stop
+else (yes)
+  |System|
+  :Publish Report;
+  :Send Report Notification;
+endif
+
+|Project Manager|
+:Receive Report Notification;
+:Review Bug Report;
+
+if (Is Valid Issue?) then (no / duplicate)
+  :Set Status "Rejected";
+  :Add Comment (Reason);
+  stop
+else (yes)
+  :Determine Priority;
+  :Check Developer Availability;
+  :Assign to Developer;
+endif
+
+|System|
+:Send Assignment Notification;
+
+|Developer|
+:Receive Assignment Notification;
+:View Bug Report;
+
+fork
+  :Change Status "In Progress";
+  :Reproduce Bug;
+  :Modify Source Code;
+  :Commit Changes;
+fork again
+  :Start Work Timer;
+  :Update "Estimated Time";
+end fork
+
+:Link Commit to Bug;
+:Push Code to Repository;
+:Set Status "Resolved";
+
+|System|
+:Save Bug Solution;
+:Trigger CI Pipeline;
+if (Tests Pass?) then (no)
+  :Log Error;
+  :Set Status "Reopened";
+  |Developer|
+  -> fix build;
+else (yes)
+  |System|
+  :Deploy to Staging Env;
+  :Send Signal "Ready for QA";
+endif
+
+|QA Engineer|
+:Receive Signal "Ready for QA";
+:Run Verification Tests;
+
+if (Bug Fixed?) then (no)
+  :Attach New Logs;
+  :Add Comment "Still Reproducible";
+  :Set Status "Reopened";
+  |Developer|
+  -> refactor code;
+else (yes)
+  |QA Engineer|
+  :Set Status "Closed";
+  :Generate Closure Report;
+  stop
+endif
+
+@enduml
